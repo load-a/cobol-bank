@@ -16,14 +16,14 @@ FILE SECTION.
 FD account-file.
 01 account-record.
 	02 account-number 	PIC 9(5) VALUE ZEROS.
-	02 account-name		PIC X(20).
+	02 account-name		PIC X(20) VALUE SPACES.
 	02 account-balance	PIC 9(7)V99 VALUE ZEROS.
 	*>02 account-history	PIC x(300).
 
 WORKING-STORAGE SECTION.
 01 prompter.
-	02 question	PIC X(50).
-	02 response PIC X(20).
+	02 question	PIC X(50) VALUE SPACES.
+	02 response PIC X(20) VALUE SPACES.
 
 01 user-status 	PIC 9 VALUE 0.
 	88 confirm	VALUE 1.
@@ -106,6 +106,18 @@ Make-Deposit.
 
 Make-Withdrawl.
 	PERFORM Sign-In.
+
+	MOVE "Withdraw how much?" TO question
+	PERFORM Ask-for-Number.
+
+	IF generic-number-raw > account-balance
+		DISPLAY "Insufficient Funds."
+	ELSE
+		SUBTRACT generic-number-raw FROM account-balance
+		REWRITE account-record
+	END-IF
+	
+	PERFORM View-Statement.
 
 Make-Transfer.
 	PERFORM Sign-In.
